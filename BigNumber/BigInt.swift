@@ -127,7 +127,11 @@ extension BigInt : Equatable
 {
     public func equals(_ value: Int) -> Bool
     {
-        return self.equals(BigInt(value))
+        guard value >= 0 else {
+            return self.equals(BigInt(value))
+        }
+        
+        return mp_cmp_d(&self.handle, mp_digit(value)) == MP_EQ
     }
     
     public func equals(_ value: BigInt) -> Bool
@@ -162,7 +166,11 @@ extension BigInt : Comparable
 {
     public func gt(_ value: Int) -> Bool
     {
-        return self.gt(BigInt(value))
+        guard value >= 0 else {
+            return self.gt(BigInt(value))
+        }
+        
+        return mp_cmp_d(&self.handle, mp_digit(value)) == MP_GT
     }
     
     public func gt(_ value: BigInt) -> Bool
@@ -172,7 +180,11 @@ extension BigInt : Comparable
     
     public func lt(_ value: Int) -> Bool
     {
-        return self.lt(BigInt(value))
+        guard value >= 0 else {
+            return self.lt(BigInt(value))
+        }
+        
+        return mp_cmp_d(&self.handle, mp_digit(value)) == MP_LT
     }
     
     public func lt(_ value: BigInt) -> Bool
@@ -182,7 +194,7 @@ extension BigInt : Comparable
     
     public func gteq(_ value: Int) -> Bool
     {
-        return self.gteq(BigInt(value))
+        return self.gt(value) || self.equals(value)
     }
     
     public func gteq(_ value: BigInt) -> Bool
@@ -192,12 +204,32 @@ extension BigInt : Comparable
     
     public func lteq(_ value: Int) -> Bool
     {
-        return self.lteq(BigInt(value))
+        return self.lt(value) || self.equals(value)
     }
     
     public func lteq(_ value: BigInt) -> Bool
     {
         return self.lt(value) || self.equals(value)
+    }
+    
+    public func compare(_ value: Int) -> ComparisonResult
+    {
+        guard value >= 0 else {
+            return self.compare(BigInt(value))
+        }
+        
+        let result = mp_cmp_d(&self.handle, mp_digit(value))
+        
+        switch result {
+        case MP_EQ:
+            return .orderedSame
+        case MP_GT:
+            return .orderedAscending
+        case MP_LT:
+            return .orderedDescending
+        default:
+            fatalError() // Unreachable
+        }
     }
     
     public func compare(_ value: BigInt) -> ComparisonResult
@@ -264,7 +296,19 @@ extension BigInt
 {
     public func add(_ value: Int) -> BigInt
     {
-        return self.add(BigInt(value))
+        guard value >= 0 else {
+            return self.add(BigInt(value))
+        }
+        
+        let result = BigInt()
+        let error  = mp_add_d(&self.handle, mp_digit(value), &result.handle)
+        
+        guard error == MP_OKAY else {
+            let message = String(cString: mp_error_to_string(error))
+            fatalError("Fatal error while running mp_add(value:): \(message)")
+        }
+        
+        return result
     }
     
     public func add(_ value: BigInt) -> BigInt
@@ -292,7 +336,7 @@ extension BigInt
     
     public static func +=(lhs: inout BigInt, rhs: Int)
     {
-        lhs += BigInt(rhs)
+        lhs = lhs + lhs
     }
     
     public static func +=(lhs: inout BigInt, rhs: BigInt)
@@ -308,7 +352,19 @@ extension BigInt
 {
     public func substract(_ value: Int) -> BigInt
     {
-        return self.substract(BigInt(value))
+        guard value >= 0 else {
+            return self.substract(BigInt(value))
+        }
+        
+        let result = BigInt()
+        let error  = mp_sub_d(&self.handle, mp_digit(value), &result.handle)
+        
+        guard error == MP_OKAY else {
+            let message = String(cString: mp_error_to_string(error))
+            fatalError("Fatal error while running mp_sub(value:): \(message)")
+        }
+        
+        return result
     }
     
     public func substract(_ value: BigInt) -> BigInt
@@ -352,7 +408,19 @@ extension BigInt
 {
     public func divide(_ value: Int) -> BigInt
     {
-        return self.divide(BigInt(value))
+        guard value >= 0 else {
+            return self.divide(BigInt(value))
+        }
+        
+        let result = BigInt()
+        let error  = mp_div_d(&self.handle, mp_digit(value), &result.handle, nil)
+        
+        guard error == MP_OKAY else {
+            let message = String(cString: mp_error_to_string(error))
+            fatalError("Fatal error while running mp_div(value:): \(message)")
+        }
+        
+        return result
     }
     
     public func divide(_ value: BigInt) -> BigInt
@@ -396,7 +464,19 @@ extension BigInt
 {
     public func multiply(_ value: Int) -> BigInt
     {
-        return self.multiply(BigInt(value))
+        guard value >= 0 else {
+            return self.multiply(BigInt(value))
+        }
+        
+        let result = BigInt()
+        let error  = mp_mul_d(&self.handle, mp_digit(value), &result.handle)
+        
+        guard error == MP_OKAY else {
+            let message = String(cString: mp_error_to_string(error))
+            fatalError("Fatal error while running mp_mul(value:): \(message)")
+        }
+        
+        return result
     }
     
     public func multiply(_ value: BigInt) -> BigInt
@@ -440,7 +520,19 @@ extension BigInt
 {
     public func mod(_ value: Int) -> BigInt
     {
-        return self.mod(BigInt(value))
+        guard value >= 0 else {
+            return self.mod(BigInt(value))
+        }
+        
+        var result = mp_digit()
+        let error  = mp_mod_d(&self.handle, mp_digit(value), &result)
+        
+        guard error == MP_OKAY else {
+            let message = String(cString: mp_error_to_string(error))
+            fatalError("Fatal error while running mp_mod(value:): \(message)")
+        }
+        
+        return BigInt(Int(result))
     }
     
     public func mod(_ value: BigInt) -> BigInt
@@ -456,10 +548,10 @@ extension BigInt
         return result
     }
     
-    public func modPow(mod: BigInt, pow: BigInt) -> BigInt
+    public func modPow(exponent: BigInt, modulus: BigInt) -> BigInt
     {
         let result = BigInt()
-        let error  = mp_exptmod(&self.handle, &mod.handle, &pow.handle, &result.handle)
+        let error  = mp_exptmod(&self.handle, &exponent.handle, &modulus.handle, &result.handle)
         
         guard error == MP_OKAY else {
             let message = String(cString: mp_error_to_string(error))
@@ -481,7 +573,7 @@ extension BigInt
     
     public static func %=(lhs: inout BigInt, rhs: Int)
     {
-        lhs %= BigInt(rhs)
+        lhs = lhs % rhs
     }
     
     public static func %=(lhs: inout BigInt, rhs: BigInt)
@@ -499,7 +591,7 @@ extension BigInt
     {
         let result = BigInt()
         let error  = mp_expt_d(&self.handle, mp_digit(value), &result.handle)
-        
+                
         guard error == MP_OKAY else {
             let message = String(cString: mp_error_to_string(error))
             fatalError("Fatal error while running mp_expt_d: \(message)")
