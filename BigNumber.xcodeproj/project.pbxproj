@@ -146,6 +146,8 @@
 		577FAC5D206EED70004B4862 /* CTomMath.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 577FAB4A206EE7EF004B4862 /* CTomMath.framework */; };
 		577FAC60206EEE94004B4862 /* mp_int+extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577FAC5E206EEE94004B4862 /* mp_int+extensions.swift */; };
 		577FAC61206EEE94004B4862 /* BigInt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577FAC5F206EEE94004B4862 /* BigInt.swift */; };
+		577FAC67206F06F4004B4862 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 577FAC65206F06F3004B4862 /* LICENSE */; };
+		577FAC68206F06F4004B4862 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 577FAC66206F06F3004B4862 /* README.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -302,6 +304,8 @@
 		577FAB4D206EE7F0004B4862 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		577FAC5E206EEE94004B4862 /* mp_int+extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "mp_int+extensions.swift"; sourceTree = "<group>"; };
 		577FAC5F206EEE94004B4862 /* BigInt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BigInt.swift; sourceTree = "<group>"; };
+		577FAC65206F06F3004B4862 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = SOURCE_ROOT; };
+		577FAC66206F06F3004B4862 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -356,8 +360,10 @@
 			isa = PBXGroup;
 			children = (
 				577FAA37206EE631004B4862 /* Sources */,
-				577FAA20206EE2B8004B4862 /* BigNumber.h */,
 				577FAA21206EE2B8004B4862 /* Info.plist */,
+				577FAC65206F06F3004B4862 /* LICENSE */,
+				577FAC66206F06F3004B4862 /* README.md */,
+				577FAA20206EE2B8004B4862 /* BigNumber.h */,
 			);
 			path = BigNumber;
 			sourceTree = "<group>";
@@ -681,6 +687,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				577FAC68206F06F4004B4862 /* README.md in Resources */,
+				577FAC67206F06F4004B4862 /* LICENSE in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

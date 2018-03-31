@@ -591,7 +591,7 @@ extension BigInt
     {
         let result = BigInt()
         let error  = mp_expt_d(&self.handle, mp_digit(value), &result.handle)
-                
+        
         guard error == MP_OKAY else {
             let message = String(cString: mp_error_to_string(error))
             fatalError("Fatal error while running mp_expt_d: \(message)")
@@ -613,4 +613,21 @@ precedencegroup ExponentiationPrecedence {
 
 infix operator ** : ExponentiationPrecedence
 
-
+/**
+ * Randomizing
+ */
+extension BigInt
+{
+    public static func random(digits: UInt) -> BigInt
+    {
+        let result = BigInt()
+        let error  = mp_rand(&result.handle, Int32(digits))
+        
+        guard error == MP_OKAY else {
+            let message = String(cString: mp_error_to_string(error))
+            fatalError("Fatal error while running mp_rand: \(message)")
+        }
+        
+        return result
+    }
+}
